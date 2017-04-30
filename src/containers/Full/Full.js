@@ -1,37 +1,39 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Header from '../../components/Header/';
 import Sidebar from '../../components/Sidebar/';
 import Aside from '../../components/Aside/';
 import Footer from '../../components/Footer/';
 
-import Breadcrumbs from 'react-breadcrumbs';
+// import Breadcrumbs from 'react-breadcrumbs';
 
-class Full extends Component {
-  render() {
-    return (
+const Full = (props) => {
+  return (
+    <div className="Full">
       <div className="app">
-        <Header />
+        <Header {...props} />
         <div className="app-body">
-          <Sidebar {...this.props}/>
+          <Sidebar {...props}/>
           <main className="main">
-            <Breadcrumbs
+            {/* <Breadcrumbs
               wrapperElement="ol"
               wrapperClass="breadcrumb"
               itemClass="breadcrumb-item"
               separator=""
-              routes={this.props.routes}
-              params={this.props.params}
-            />
+              routes={props.routes}
+              params={props.params}
+            /> */}
             <div className="container-fluid">
-              {this.props.children}
+              {props.children}
             </div>
           </main>
           <Aside />
         </div>
         <Footer />
       </div>
-    );
-  }
+    </div>
+  );
 }
+Full.propTypes = {}
 
 export default Full;

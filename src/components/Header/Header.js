@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+
+import { Link, NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownItem } from 'reactstrap';
 
 class Header extends Component {
@@ -40,23 +42,22 @@ class Header extends Component {
   }
 
   render() {
+    const { navDefinition } = this.props,
+        headerRoutes = navDefinition.routes.filter(r => r.header === true);
+    console.log(headerRoutes);
     return (
       <header className="app-header navbar">
         <button className="navbar-toggler mobile-sidebar-toggler d-lg-none" onClick={this.mobileSidebarToggle} type="button">&#9776;</button>
-        <a className="navbar-brand" href="#"></a>
+        <Link to="/" className="navbar-brand"></Link>
         <ul className="nav navbar-nav d-md-down-none">
           <li className="nav-item">
             <a className="nav-link navbar-toggler sidebar-toggler" onClick={this.sidebarToggle} href="#">&#9776;</a>
           </li>
-          <li className="nav-item px-3">
-            <a className="nav-link" href="#">Dashboard</a>
-          </li>
-          <li className="nav-item px-3">
-            <a className="nav-link" href="#">Users</a>
-          </li>
-          <li className="nav-item px-3">
-            <a className="nav-link" href="#">Settings</a>
-          </li>
+          { headerRoutes.map(({ route, text }) => (
+            <li className="nav-item px-3" key={route}>
+              <NavLink to={route} className="nav-link">{text}</NavLink>
+            </li>
+          ))}
         </ul>
         <ul className="nav navbar-nav ml-auto">
           <li className="nav-item d-md-down-none">

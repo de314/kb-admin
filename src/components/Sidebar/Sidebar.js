@@ -1,105 +1,78 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router'
+import React from 'react';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
 
-class Sidebar extends Component {
+import { Link } from 'react-router-dom';
 
-  handleClick(e) {
-    e.preventDefault();
-    e.target.parentElement.classList.toggle('open');
+import Badge from '../Badge/Badge';
+import NavItem from './NavItem';
+import NavTitle from './NavTitle';
+import NavItemContainer from './NavItemContainer';
+
+function getBadge({text, type}) {
+  return (
+    <Badge type={type}>{text}</Badge>
+  )
+}
+
+function getNavTitle({ text }, i) {
+  return (
+    <NavTitle key={i}>
+      { text }
+    </NavTitle>
+  )
+}
+
+function getNavItem({ text, iconClass, route, badge = {} }, i) {
+  badge = !_.isUndefined(badge.text) ? getBadge(badge) : undefined;
+  return (
+    <NavItem iconClass={iconClass} to={route} badge={badge} key={i}>
+      { text }
+    </NavItem>
+  )
+}
+
+function getNavItemContainer({ text, iconClass, badge = {}, route, subRoutes }, i) {
+  const active = window.location.href.indexOf(route) >= 0;
+  badge = !_.isUndefined(badge.text) ? getBadge(badge) : undefined;
+  return (
+    <NavItemContainer active={active} badge={badge} iconClass={iconClass} text={text} key={i}>
+      { subRoutes.map(getNavElement) }
+    </NavItemContainer>
+  )
+}
+
+function getNavElement(def, i) {
+  if (def.sidebar !== true) {
+    return '';
   }
-
-  activeRoute(routeName) {
-    return this.props.location.pathname.indexOf(routeName) > -1 ? 'nav-item nav-dropdown open' : 'nav-item nav-dropdown';
+  if (_.isArray(def.subRoutes)) {
+    return getNavItemContainer(def, i);
   }
-
-  // secondLevelActive(routeName) {
-  //   return this.props.location.pathname.indexOf(routeName) > -1 ? "nav nav-second-level collapse in" : "nav nav-second-level collapse";
-  // }
-
-  render() {
-    return (
-
-      <div className="sidebar">
-        <nav className="sidebar-nav">
-          <ul className="nav">
-            <li className="nav-item">
-              <Link to={'/dashboard'} className="nav-link" activeClassName="active"><i className="icon-speedometer"></i> Dashboard <span className="badge badge-info">NEW</span></Link>
-            </li>
-            <li className="nav-title">
-              UI Elements
-            </li>
-            <li className={this.activeRoute("/components")}>
-              <a className="nav-link nav-dropdown-toggle" href="#" onClick={this.handleClick.bind(this)}><i className="icon-puzzle"></i> Components</a>
-              <ul className="nav-dropdown-items">
-                <li className="nav-item">
-                  <Link to={'/components/buttons'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Buttons</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/components/social-buttons'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Social Buttons</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/components/cards'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Cards</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/components/forms'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Forms</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/components/modals'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Modals</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/components/switches'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Switches</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/components/tables'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Tables</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/components/tabs'} className="nav-link" activeClassName="active"><i className="icon-puzzle"></i> Tabs</Link>
-                </li>
-              </ul>
-            </li>
-            <li className={this.activeRoute("/icons")}>
-              <a className="nav-link nav-dropdown-toggle" href="#" onClick={this.handleClick.bind(this)}><i className="icon-star"></i> Icons</a>
-              <ul className="nav-dropdown-items">
-                <li className="nav-item">
-                  <Link to={'/icons/font-awesome'} className="nav-link" activeClassName="active"><i className="icon-star"></i> Font Awesome</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/icons/simple-line-icons'} className="nav-link" activeClassName="active"><i className="icon-star"></i> Simple Line Icons</Link>
-                </li>
-              </ul>
-            </li>
-            <li className="nav-item">
-              <Link to={'/widgets'} className="nav-link" activeClassName="active"><i className="icon-calculator"></i> Widgets <span className="badge badge-info">NEW</span></Link>
-            </li>
-            <li className="nav-item">
-              <Link to={'/charts'} className="nav-link" activeClassName="active"><i className="icon-pie-chart"></i> Charts</Link>
-            </li>
-            <li className="divider"></li>
-            <li className="nav-title">
-              Extras
-            </li>
-            <li className="nav-item nav-dropdown">
-              <a className="nav-link nav-dropdown-toggle" href="#" onClick={this.handleClick.bind(this)}><i className="icon-star"></i> Pages</a>
-              <ul className="nav-dropdown-items">
-                <li className="nav-item">
-                  <Link to={'/pages/login'} className="nav-link" activeClassName="active"><i className="icon-star"></i> Login</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/pages/register'} className="nav-link" activeClassName="active"><i className="icon-star"></i> Register</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/pages/404'} className="nav-link" activeClassName="active"><i className="icon-star"></i> Error 404</Link>
-                </li>
-                <li className="nav-item">
-                  <Link to={'/pages/500'} className="nav-link" activeClassName="active"><i className="icon-star"></i> Error 500</Link>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    )
+  if (!_.isUndefined(def.route)) {
+    return getNavItem(def, i);
   }
+  if (!_.isUndefined(def.text)) {
+    return getNavTitle(def, i);
+  }
+  return (<li className="divider" key={i}></li>);
+}
+
+const Sidebar = ({ navDefinition }) => {
+  const navItems = navDefinition.routes;
+  return (
+    <div className="sidebar">
+      <nav className="sidebar-nav">
+        <ul className="nav">
+          { navItems.map(getNavElement) }
+        </ul>
+      </nav>
+    </div>
+  );
+}
+
+Sidebar.propTypes = {
+  navDefinition: PropTypes.object.isRequired
 }
 
 export default Sidebar;
