@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-// import { Router, Route, IndexRoute, hashHistory } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import collections from './collections';
 
 const RouteWrapper = ({ component: Component, container: Container, ...rest }) => {
   return (

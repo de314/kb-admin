@@ -1,6 +1,6 @@
 {
-  "name": "CoreUI",
-  "version": "1.0.0-alpha.4",
+  "name": "kb-admin",
+  "version": "0.1.0",
   "private": true,
   "homepage": ".",
   "devDependencies": {
@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "chart.js": "2.5.0",
+    "kb-ui": "file:///Users/davidesposito/workspace/web/kb-ui/kb-ui-0.1.0.tgz",
     "lodash": "^4.17.4",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
@@ -20,7 +21,8 @@
     "react-dom": "^15.4.2",
     "react-router-dom": "^4.1.1",
     "reactstrap": "4.2.0",
-    "recompose": "^0.23.1"
+    "recompose": "^0.23.1",
+    "uuid": "^3.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

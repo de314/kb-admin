@@ -24,7 +24,7 @@ const NavItemContainer = ({ active = false, badge, children, iconClass, text }) 
 NavItemContainer.propTypes = {
   active: PropTypes.bool,
   badge: PropTypes.node,
-  iconClass: PropTypes.string.isRequired,
+  iconClass: PropTypes.string,
   text: PropTypes.node.isRequired
 }
 

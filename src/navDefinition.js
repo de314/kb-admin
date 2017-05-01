@@ -1,3 +1,11 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import _ from 'lodash';
+import collections from './collections/index';
+import kb from 'kb-ui';
+
+import { Link } from 'react-router-dom';
+
 // Containers
 import Full from './containers/Full/'
 import Simple from './containers/Simple/'
@@ -142,5 +150,109 @@ const navDefinition = {
     new RouteDefinition('Settings', '/settings', Users, Full).addToHeader()
   ]
 }
+
+const ViewWrapper = ({ id, title, view, onSubmit, wrapperProps }) => {
+  console.log({id, title, view, wrapperProps});
+  return (
+    <div className="ViewWrapper">
+      <div className="card">
+        <div className="card-header">
+          {title}
+        </div>
+        <div className="card-block">
+          {view._render(id, onSubmit)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ViewWrapper.propTypes = {
+  id: PropTypes.string,
+  onSubmit: PropTypes.func,
+  title: PropTypes.string.isRequired,
+  view: PropTypes.object.isRequired,
+  wrapperProps: PropTypes.object.isRequired,
+}
+
+function appendListCtas(list, ctas) {
+  if (ctas.length > 0) {
+    list.options.fields.push(
+      kb.field('id').label('Actions').render((id) => ctas.map(({ href = '#', onClick = () => {}, text }, i) => (
+        <Link
+          className="btn btn-sm btn-secondary"
+          to={_.isFunction(href) ? href(id) : href }
+          onClick={e => onClick(id)}
+          key={i}
+        >
+          {text}
+        </Link>
+      )))
+    );
+  }
+}
+
+function appendCollectionRoutes(key, collection, navDefinition) {
+  const { options } = collection,
+      { list, details, create, edit, singular, plural, slug } = options,
+      { routes } = navDefinition,
+      slugs = {
+        list: `/${slug}/list`,
+        create: `/${slug}/create`,
+        details: (id) => `/${slug}/details/${id}`,
+        edit: (id) => `/${slug}/edit/${id}`,
+      },
+      ctas = [];
+  if (!_.isUndefined(details)) {
+    routes.push(new RouteDefinition(
+          `Create ${singular}`,
+          slugs.details(':id'),
+          (props) => (<ViewWrapper wrapperProps={props} title={`${singular}`} view={details} id={props.match.params.id} />),
+          Full
+        )
+    );
+    ctas.push({ text: "View", href: (id) => slugs.details(id) });
+  }
+  if (!_.isUndefined(edit)) {
+    routes.push(new RouteDefinition(
+          `Edit ${singular}`,
+          slugs.edit(':id'),
+          (props) => (<ViewWrapper wrapperProps={props} title={`${singular}`} view={edit} id={props.match.params.id} onSubmit={() => props.history.push(slugs.list)} />),
+          Full
+        )
+    );
+    ctas.push({ text: "Edit", href: (id) => slugs.edit(id) });
+  }
+  if (!_.isUndefined(list) || !_.isUndefined(create)) {
+    const subRoutes = [];
+    if (!_.isUndefined(list)) {
+      appendListCtas(list, ctas);
+      subRoutes.push(new RouteDefinition(
+            `All ${plural}`,
+            slugs.list,
+            (props) => (<ViewWrapper wrapperProps={props} title={`All ${plural}`} view={list} />),
+            Full
+          )
+          .withIcon('fa fa-list')
+          .addToSidebar()
+        )
+    }
+    if (!_.isUndefined(create)) {
+      subRoutes.push(new RouteDefinition(
+            `Create ${singular}`,
+            slugs.create,
+            (props) => (<ViewWrapper wrapperProps={props} title={`All ${plural}`} view={create} onSubmit={() => props.history.push(slugs.list)} />),
+            Full
+          )
+          .withIcon('fa fa-plus')
+          .addToSidebar()
+      )
+    }
+    routes.push(new RouteContainerDefinition(plural, `/${slug}`, subRoutes).addToSidebar())
+  }
+  console.log({key, list, details, create, edit});
+}
+
+_.map(collections, (collection, key) => appendCollectionRoutes(key, collection, navDefinition));
 
 export default navDefinition;
